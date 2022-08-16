@@ -7,11 +7,12 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
-import net.mamoe.mirai.Bot
 import net.mamoe.mirai.api.http.adapter.*
 import net.mamoe.mirai.api.http.context.session.*
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.data.*
+import org.hibernate.SessionFactory
+import xyz.cssxsh.hibernate.*
 import xyz.cssxsh.mirai.hibernate.*
 import xyz.cssxsh.mirai.hibernate.entry.*
 import java.io.File
@@ -21,6 +22,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
     internal val setting: HibernateAdapterSetting by lazy {
         getSetting() ?: HibernateAdapterSetting(port = 8081)
     }
+
+    @Suppress("INVISIBLE_MEMBER")
+    private val factory: SessionFactory get() = xyz.cssxsh.mirai.hibernate.factory
 
     override fun onEnable() {
         log.info(">>> [hibernate message recorder] is listening at http://${host}:${port}")
@@ -43,122 +47,241 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                 // face
                 get("/face/random") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val record = FaceRecord.random()
-                        Json.encodeToString(record)
+                        try {
+                            val record = FaceRecord.random()
+                            success(data = record)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = "random failure, face record may be empty.")
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
                 put("/face/disable") {
-                    val md5 = call.parameters["md5"] ?: return@put call.respond(HttpStatusCode.BadRequest)
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val records = FaceRecord.disable(md5 = md5)
-                        Json.encodeToString(records)
+                        try {
+                            val md5 = call.parameters["md5"] ?: throw NoSuchElementException("need parameter md5")
+                            val records = FaceRecord.disable(md5 = md5)
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause:  IllegalStateException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
                 get("/face/tag") {
-                    val md5 = call.parameters["md5"] ?: return@get call.respond(HttpStatusCode.BadRequest)
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val records = FaceTagRecord.get(md5 = md5)
-                        Json.encodeToString(records)
+                        try {
+                            val md5 = call.parameters["md5"] ?: throw NoSuchElementException("need parameter md5")
+                            val records = FaceTagRecord.get(md5 = md5)
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
                 put("/face/tag") {
-                    val md5 = call.parameters["md5"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-                    val tag = call.parameters["tag"] ?: return@put call.respond(HttpStatusCode.BadRequest)
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val records = FaceTagRecord.set(md5 = md5, tag = tag)
-                        Json.encodeToString(records)
+                        try {
+                            val md5 = call.parameters["md5"] ?: throw NoSuchElementException("need parameter md5")
+                            val tag = call.parameters["tag"] ?: throw NoSuchElementException("need parameter tag")
+                            val records = FaceTagRecord.set(md5 = md5, tag = tag)
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
                 delete("/face/tag") {
-                    val md5 = call.parameters["md5"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
-                    val tag = call.parameters["tag"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val records = FaceTagRecord.remove(md5 = md5, tag = tag)
-                        Json.encodeToString(records)
+                        try {
+                            val md5 = call.parameters["md5"] ?: throw NoSuchElementException("need parameter md5")
+                            val tag = call.parameters["tag"] ?: throw NoSuchElementException("need parameter tag")
+                            val records = FaceTagRecord.remove(md5 = md5, tag = tag)
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
                 // message
                 get("/message/bot") {
-                    val bot = call.parameters["bot"]?.toLong() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val start = call.parameters["start"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val end = call.parameters["end"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val records = MiraiHibernateRecorder.get(
-                            bot = Bot.getInstance(bot),
-                            start = start,
-                            end = end
-                        )
-                        Json.encodeToString(records)
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter bot")
+                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { criteria ->
+                                    val record = criteria.from<MessageRecord>()
+                                    criteria.select(record)
+                                        .where(
+                                            between(record.get("time"), start, end),
+                                            equal(record.get<Long>("bot"), bot)
+                                        )
+                                        .orderBy(desc(record.get<Int>("time")))
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
                 get("/message/group") {
-                    val bot = call.parameters["bot"]?.toLong() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val group = call.parameters["group"]?.toLong() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val start = call.parameters["start"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val end = call.parameters["end"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val records = MiraiHibernateRecorder.get(
-                            group = Bot.getInstance(bot).getGroupOrFail(group),
-                            start = start,
-                            end = end
-                        )
-                        Json.encodeToString(records)
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter bot")
+                            val group = call.parameters["group"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter group")
+                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { criteria ->
+                                    val record = criteria.from<MessageRecord>()
+                                    criteria.select(record)
+                                        .where(
+                                            equal(record.get<Int>("bot"), bot),
+                                            between(record.get("time"), start, end),
+                                            equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.GROUP),
+                                            equal(record.get<Long>("targetId"), group)
+                                        )
+                                        .orderBy(desc(record.get<Int>("time")))
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
                 get("/message/friend") {
-                    val bot = call.parameters["bot"]?.toLong() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val friend = call.parameters["friend"]?.toLong() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val start = call.parameters["start"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val end = call.parameters["end"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val records = MiraiHibernateRecorder.get(
-                            friend = Bot.getInstance(bot).getFriendOrFail(friend),
-                            start = start,
-                            end = end
-                        )
-                        Json.encodeToString(records)
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter bot")
+                            val friend = call.parameters["friend"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter friend")
+                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { criteria ->
+                                    val record = criteria.from<MessageRecord>()
+                                    criteria.select(record)
+                                        .where(
+                                            equal(record.get<Int>("bot"), bot),
+                                            between(record.get("time"), start, end),
+                                            equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.FRIEND),
+                                            or(
+                                                equal(record.get<Long>("fromId"), friend),
+                                                equal(record.get<Long>("targetId"), friend)
+                                            )
+                                        )
+                                        .orderBy(desc(record.get<Int>("time")))
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
                 get("/message/member") {
-                    val bot = call.parameters["bot"]?.toLong() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val group = call.parameters["group"]?.toLong() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val member = call.parameters["member"]?.toLong() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val start = call.parameters["start"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val end = call.parameters["end"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val records = MiraiHibernateRecorder.get(
-                            member = Bot.getInstance(bot).getGroupOrFail(group).getOrFail(member),
-                            start = start,
-                            end = end
-                        )
-                        Json.encodeToString(records)
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter bot")
+                            val group = call.parameters["group"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter group")
+                            val member = call.parameters["member"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter member")
+                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { criteria ->
+                                    val record = criteria.from<MessageRecord>()
+                                    criteria.select(record)
+                                        .where(
+                                            equal(record.get<Int>("bot"), bot),
+                                            between(record.get("time"), start, end),
+                                            equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.GROUP),
+                                            equal(record.get<Long>("fromId"), member),
+                                            equal(record.get<Long>("targetId"), group)
+                                        )
+                                        .orderBy(desc(record.get<Int>("time")))
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
                 get("/message/stranger") {
-                    val bot = call.parameters["bot"]?.toLong() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val stranger = call.parameters["stranger"]?.toLong() ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val start = call.parameters["start"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val end = call.parameters["end"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val records = MiraiHibernateRecorder.get(
-                            stranger = Bot.getInstance(bot).getStrangerOrFail(stranger),
-                            start = start,
-                            end = end
-                        )
-                        Json.encodeToString(records)
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter bot")
+                            val stranger = call.parameters["stranger"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter stranger")
+                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { criteria ->
+                                    val record = criteria.from<MessageRecord>()
+                                    criteria.select(record)
+                                        .where(
+                                            equal(record.get<Int>("bot"), bot),
+                                            between(record.get("time"), start, end),
+                                            equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.STRANGER),
+                                            or(
+                                                equal(record.get<Long>("fromId"), stranger),
+                                                equal(record.get<Long>("targetId"), stranger)
+                                            )
+                                        )
+                                        .orderBy(desc(record.get<Int>("time")))
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
                 get("/message/kind") {
-                    val kind = call.parameters["kind"] ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val start = call.parameters["start"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
-                    val end = call.parameters["end"]?.toInt()  ?: return@get call.respond(HttpStatusCode.BadRequest)
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
-                        val records = MiraiHibernateRecorder.get(
-                            kind = MessageSourceKind.valueOf(kind),
-                            start = start,
-                            end = end
-                        )
-                        Json.encodeToString(records)
+                        try {
+                            val kind = call.parameters["kind"] ?: throw NoSuchElementException("need parameter kind")
+                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { criteria ->
+                                    val record = criteria.from<MessageRecord>()
+                                    criteria.select(record)
+                                        .where(
+                                            between(record.get("time"), start, end),
+                                            equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.valueOf(kind))
+                                        )
+                                        .orderBy(desc(record.get<Int>("time")))
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
                     }
                 }
             }
@@ -168,5 +291,26 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
     public companion object {
         @JvmStatic
         internal val STATIC_KEY: String = "xyz.cssxsh.mirai.hibernate.http.static"
+
+        @JvmStatic
+        internal fun <T> success(data: T): String {
+            val result = HibernateAdapterResult(
+                code = 0,
+                message = "success",
+                data = data
+            )
+            return Json.encodeToString(result)
+        }
+
+        @JvmStatic
+        internal fun failure(code: Int, message: String): String {
+            val result = HibernateAdapterResult(
+                code = code,
+                message = message,
+                data = null
+            )
+
+            return Json.encodeToString(result)
+        }
     }
 }
