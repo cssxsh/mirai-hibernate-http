@@ -2,14 +2,12 @@ package xyz.cssxsh.mirai.hibernate.http
 
 import kotlinx.serialization.*
 
+/**
+ * @param host 监听 url
+ * @param port 监听端口
+ */
 @Serializable
 public data class HibernateAdapterSetting(
-    /**
-     * 监听 url
-     */
     val host: String = "localhost",
-    /**
-     * 监听端口
-     */
     val port: Int = 8081,
 )

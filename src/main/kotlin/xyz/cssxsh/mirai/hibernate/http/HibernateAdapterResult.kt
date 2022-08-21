@@ -9,5 +9,5 @@ public data class HibernateAdapterResult<T>(
     @SerialName("msg")
     val message: String,
     @SerialName("data")
-    val data: T?
+    val data: T? = null
 )

@@ -11,7 +11,6 @@ import net.mamoe.mirai.api.http.adapter.*
 import net.mamoe.mirai.api.http.context.session.*
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.data.*
-import org.hibernate.SessionFactory
 import xyz.cssxsh.hibernate.*
 import xyz.cssxsh.mirai.hibernate.*
 import xyz.cssxsh.mirai.hibernate.entry.*
@@ -24,7 +23,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
     }
 
     @Suppress("INVISIBLE_MEMBER")
-    private val factory: SessionFactory get() = xyz.cssxsh.mirai.hibernate.factory
+    private val factory: org.hibernate.SessionFactory get() = xyz.cssxsh.mirai.hibernate.factory
 
     override fun onEnable() {
         log.info(">>> [hibernate message recorder] is listening at http://${host}:${port}")
@@ -65,7 +64,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message.orEmpty())
-                        } catch (cause:  IllegalStateException) {
+                        } catch (cause: IllegalStateException) {
                             failure(code = 400, message = cause.message.orEmpty())
                         } catch (cause: Throwable) {
                             failure(code = 500, message = cause.message.orEmpty())
@@ -117,9 +116,12 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                 get("/message/bot") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
-                            val bot = call.parameters["bot"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter bot")
-                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
-                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val start = call.parameters["start"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
                                 session.withCriteria<MessageRecord> { criteria ->
                                     val record = criteria.from<MessageRecord>()
@@ -142,10 +144,14 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                 get("/message/group") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
-                            val bot = call.parameters["bot"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter bot")
-                            val group = call.parameters["group"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter group")
-                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
-                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val group = call.parameters["group"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter group")
+                            val start = call.parameters["start"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
                                 session.withCriteria<MessageRecord> { criteria ->
                                     val record = criteria.from<MessageRecord>()
@@ -170,10 +176,14 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                 get("/message/friend") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
-                            val bot = call.parameters["bot"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter bot")
-                            val friend = call.parameters["friend"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter friend")
-                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
-                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val friend = call.parameters["friend"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter friend")
+                            val start = call.parameters["start"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
                                 session.withCriteria<MessageRecord> { criteria ->
                                     val record = criteria.from<MessageRecord>()
@@ -201,11 +211,16 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                 get("/message/member") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
-                            val bot = call.parameters["bot"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter bot")
-                            val group = call.parameters["group"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter group")
-                            val member = call.parameters["member"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter member")
-                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
-                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val group = call.parameters["group"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter group")
+                            val member = call.parameters["member"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter member")
+                            val start = call.parameters["start"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
                                 session.withCriteria<MessageRecord> { criteria ->
                                     val record = criteria.from<MessageRecord>()
@@ -231,10 +246,14 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                 get("/message/stranger") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
-                            val bot = call.parameters["bot"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter bot")
-                            val stranger = call.parameters["stranger"]?.toLongOrNull() ?: throw NoSuchElementException("need parameter stranger")
-                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
-                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val stranger = call.parameters["stranger"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter stranger")
+                            val start = call.parameters["start"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
                                 session.withCriteria<MessageRecord> { criteria ->
                                     val record = criteria.from<MessageRecord>()
@@ -262,16 +281,22 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                 get("/message/kind") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
-                            val kind = call.parameters["kind"] ?: throw NoSuchElementException("need parameter kind")
-                            val start = call.parameters["start"]?.toIntOrNull() ?:throw NoSuchElementException("need parameter start")
-                            val end = call.parameters["end"]?.toIntOrNull() ?: throw NoSuchElementException("need parameter end")
+                            val kind = call.parameters["kind"]
+                                ?: throw NoSuchElementException("need parameter kind")
+                            val start = call.parameters["start"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter start")
+                            val end = call.parameters["end"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
                                 session.withCriteria<MessageRecord> { criteria ->
                                     val record = criteria.from<MessageRecord>()
                                     criteria.select(record)
                                         .where(
                                             between(record.get("time"), start, end),
-                                            equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.valueOf(kind))
+                                            equal(
+                                                record.get<MessageSourceKind>("kind"),
+                                                MessageSourceKind.valueOf(kind)
+                                            )
                                         )
                                         .orderBy(desc(record.get<Int>("time")))
                                 }.list()
@@ -340,7 +365,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         }
                     }
                 }
-                get("/archive/contact") {
+                get("/archive/user") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
                             val bot = call.parameters["bot"]?.toLongOrNull()
@@ -354,13 +379,13 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                             *if (bot != null) {
                                                 arrayOf(
                                                     equal(record.get<Long>("bot"), bot),
-                                                    record.get<MessageSourceKind>("kind")
-                                                        .`in`(MessageSourceKind.FRIEND, MessageSourceKind.STRANGER)
+                                                    notEqual(record.get<MessageSourceKind>("kind"),
+                                                        MessageSourceKind.GROUP)
                                                 )
                                             } else {
                                                 arrayOf(
-                                                    record.get<MessageSourceKind>("kind")
-                                                        .`in`(MessageSourceKind.FRIEND, MessageSourceKind.STRANGER)
+                                                    notEqual(record.get<MessageSourceKind>("kind"),
+                                                        MessageSourceKind.GROUP)
                                                 )
                                             }
                                         )
@@ -384,7 +409,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
         internal val STATIC_KEY: String = "xyz.cssxsh.mirai.hibernate.http.static"
 
         @JvmStatic
-        internal fun <T> success(data: T): String {
+        internal inline fun <reified T> success(data: T): String {
             val result = HibernateAdapterResult(
                 code = 0,
                 message = "success",
@@ -394,11 +419,10 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
         }
 
         @JvmStatic
-        internal fun failure(code: Int, message: String): String {
-            val result = HibernateAdapterResult(
+        internal inline fun failure(code: Int, message: String): String {
+            val result = HibernateAdapterResult<Unit>(
                 code = code,
-                message = message,
-                data = null
+                message = message
             )
 
             return Json.encodeToString(result)

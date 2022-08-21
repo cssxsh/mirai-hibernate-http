@@ -8,7 +8,7 @@ public object HibernateHttpExtension : KotlinPlugin(
     JvmPluginDescription(
         id = "xyz.cssxsh.mirai.plugin.mirai-hibernate-http",
         name = "mirai-hibernate-http",
-        version = "0.1.0",
+        version = "1.0.0",
     ) {
         author("cssxsh")
 
