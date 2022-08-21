@@ -284,6 +284,97 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         }
                     }
                 }
+                // archive
+                get("/archive/bot") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<Long> { criteria ->
+                                    val record = criteria.from<MessageRecord>()
+                                    criteria.select(record.get("bot"))
+                                        .distinct(true)
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
+                    }
+                }
+                get("/archive/group") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<Long> { criteria ->
+                                    val record = criteria.from<MessageRecord>()
+                                    criteria.select(record.get("targetId"))
+                                        .where(
+                                            *if (bot != null) {
+                                                arrayOf(
+                                                    equal(record.get<Long>("bot"), bot),
+                                                    equal(
+                                                        record.get<MessageSourceKind>("kind"),
+                                                        MessageSourceKind.GROUP
+                                                    )
+                                                )
+                                            } else {
+                                                arrayOf(
+                                                    equal(
+                                                        record.get<MessageSourceKind>("kind"),
+                                                        MessageSourceKind.GROUP
+                                                    )
+                                                )
+                                            }
+                                        )
+                                        .distinct(true)
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
+                    }
+                }
+                get("/archive/contact") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<Long> { criteria ->
+                                    val record = criteria.from<MessageRecord>()
+                                    val target = nullif(record.get<Long>("targetId"), record.get<Long>("bot"))
+
+                                    criteria.select(coalesce(target, record.get("fromId")))
+                                        .where(
+                                            *if (bot != null) {
+                                                arrayOf(
+                                                    equal(record.get<Long>("bot"), bot),
+                                                    record.get<MessageSourceKind>("kind")
+                                                        .`in`(MessageSourceKind.FRIEND, MessageSourceKind.STRANGER)
+                                                )
+                                            } else {
+                                                arrayOf(
+                                                    record.get<MessageSourceKind>("kind")
+                                                        .`in`(MessageSourceKind.FRIEND, MessageSourceKind.STRANGER)
+                                                )
+                                            }
+                                        )
+                                        .distinct(true)
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message.orEmpty())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message.orEmpty())
+                        }
+                    }
+                }
             }
         }
     }
