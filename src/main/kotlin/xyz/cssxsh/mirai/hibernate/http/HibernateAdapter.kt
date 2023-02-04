@@ -1,10 +1,11 @@
 package xyz.cssxsh.mirai.hibernate.http
 
-import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.http.content.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import net.mamoe.mirai.api.http.adapter.*
@@ -18,6 +19,7 @@ import java.io.File
 
 public class HibernateAdapter : MahKtorAdapter("hibernate") {
 
+    @PublishedApi
     internal val setting: HibernateAdapterSetting by lazy {
         getSetting() ?: HibernateAdapterSetting(port = 8081)
     }
@@ -43,7 +45,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                     default("index.html")
                     files(".")
                 }
-                // face
+                // region face
                 get("/face/random") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
@@ -52,7 +54,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = "random failure, face record may be empty.")
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
@@ -63,11 +65,11 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val records = FaceRecord.disable(md5 = md5)
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: IllegalStateException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
@@ -78,9 +80,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val records = FaceTagRecord.get(md5 = md5)
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
@@ -92,9 +94,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val records = FaceTagRecord.set(md5 = md5, tag = tag)
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
@@ -106,13 +108,15 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val records = FaceTagRecord.remove(md5 = md5, tag = tag)
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
-                // message
+                // endregion
+
+                // region message
                 get("/message/bot") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
@@ -135,9 +139,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
@@ -167,9 +171,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
@@ -202,9 +206,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
@@ -237,9 +241,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
@@ -272,9 +276,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
@@ -303,28 +307,29 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
-                // archive
+                // endregion
+
+                // region archive
                 get("/archive/bot") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
                             val records = factory.fromSession { session ->
-                                session.withCriteria<Long> { criteria ->
-                                    val record = criteria.from<MessageRecord>()
-                                    criteria.select(record.get("bot"))
-                                        .distinct(true)
+                                session.withCriteria<BotRecord> { criteria ->
+                                    val record = criteria.from<BotRecord>()
+                                    criteria.select(record)
                                 }.list()
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
@@ -333,73 +338,80 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         try {
                             val bot = call.parameters["bot"]?.toLongOrNull()
                             val records = factory.fromSession { session ->
-                                session.withCriteria<Long> { criteria ->
-                                    val record = criteria.from<MessageRecord>()
-                                    criteria.select(record.get("targetId"))
-                                        .where(
-                                            *if (bot != null) {
-                                                arrayOf(
-                                                    equal(record.get<Long>("bot"), bot),
-                                                    equal(
-                                                        record.get<MessageSourceKind>("kind"),
-                                                        MessageSourceKind.GROUP
-                                                    )
-                                                )
-                                            } else {
-                                                arrayOf(
-                                                    equal(
-                                                        record.get<MessageSourceKind>("kind"),
-                                                        MessageSourceKind.GROUP
-                                                    )
-                                                )
-                                            }
-                                        )
-                                        .distinct(true)
+                                session.withCriteria<GroupRecord> { criteria ->
+                                    val record = criteria.from<GroupRecord>()
+                                    val group = record.get<Long>("group")
+                                    val root = criteria.select(record)
+
+                                    if (bot != null) {
+                                        val subquery = root.subquery<GroupMemberRecord>()
+                                        val member = subquery.from<GroupMemberRecord>()
+                                        val uuid = member.get<GroupMemberIndex>("uuid")
+                                        subquery.select(member)
+                                            .where(
+                                                equal(uuid.get<Long>("group"), group),
+                                                equal(uuid.get<Long>("uid"), bot)
+                                            )
+                                        root.where(exists(subquery))
+                                    }
                                 }.list()
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
-                get("/archive/user") {
+                get("/archive/friend") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
                             val bot = call.parameters["bot"]?.toLongOrNull()
                             val records = factory.fromSession { session ->
-                                session.withCriteria<Long> { criteria ->
-                                    val record = criteria.from<MessageRecord>()
-                                    val target = nullif(record.get<Long>("targetId"), record.get<Long>("bot"))
-
-                                    criteria.select(coalesce(target, record.get("fromId")))
-                                        .where(
-                                            *if (bot != null) {
-                                                arrayOf(
-                                                    equal(record.get<Long>("bot"), bot),
-                                                    notEqual(record.get<MessageSourceKind>("kind"),
-                                                        MessageSourceKind.GROUP)
-                                                )
-                                            } else {
-                                                arrayOf(
-                                                    notEqual(record.get<MessageSourceKind>("kind"),
-                                                        MessageSourceKind.GROUP)
-                                                )
-                                            }
+                                session.withCriteria<FriendRecord> { criteria ->
+                                    val record = criteria.from<FriendRecord>()
+                                    val uuid = record.get<FriendIndex>("uuid")
+                                    val root = criteria.select(record)
+                                    if (bot != null) {
+                                        root.where(
+                                            equal(uuid.get<Long>("bot"), bot)
                                         )
-                                        .distinct(true)
+                                    }
                                 }.list()
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
-                            failure(code = 400, message = cause.message.orEmpty())
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message.orEmpty())
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
                         }
                     }
                 }
+                get("/archive/member") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val group = call.parameters["group"]
+                                ?: throw NoSuchElementException("need parameter group")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<GroupMemberRecord> { criteria ->
+                                    val record = criteria.from<GroupMemberRecord>()
+                                    val uuid = record.get<GroupMemberIndex>("uuid")
+                                    criteria.select(record)
+                                        .where(
+                                            equal(uuid.get<Long>("group"), group)
+                                        )
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                        }
+                    }
+                }
+                // endregion
             }
         }
     }
