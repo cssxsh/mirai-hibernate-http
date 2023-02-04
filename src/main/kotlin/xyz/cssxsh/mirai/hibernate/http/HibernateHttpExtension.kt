@@ -10,12 +10,12 @@ public object HibernateHttpExtension : KotlinPlugin(
     JvmPluginDescription(
         id = "xyz.cssxsh.mirai.plugin.mirai-hibernate-http",
         name = "mirai-hibernate-http",
-        version = "1.0.0",
+        version = "1.1.0",
     ) {
         author("cssxsh")
 
-        dependsOn("xyz.cssxsh.mirai.plugin.mirai-hibernate-plugin", ">= 2.4.0")
-        dependsOn("net.mamoe.mirai-api-http", ">= 2.5.0")
+        dependsOn("xyz.cssxsh.mirai.plugin.mirai-hibernate-plugin", ">= 2.6.0")
+        dependsOn("net.mamoe.mirai-api-http", ">= 2.7.0")
     }
 ) {
     override fun PluginComponentStorage.onLoad() {
