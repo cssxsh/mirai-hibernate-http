@@ -313,6 +313,34 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         }
                     }
                 }
+                get("/message/source") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val target = call.parameters["target"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter target")
+                            val time = call.parameters["time"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter time")
+                            val ids = call.parameters["ids"]
+                                ?: throw NoSuchElementException("need parameter ids")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
+                                        .where(
+                                            equal(record.get<Long>("targetId"), target),
+                                            equal(record.get<Long>("time"), time),
+                                            equal(record.get<String>("ids"), ids)
+                                        )
+                                }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                        }
+                    }
+                }
                 // endregion
 
                 // region archive
