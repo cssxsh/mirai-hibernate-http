@@ -127,9 +127,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val end = call.parameters["end"]?.toIntOrNull()
                                 ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
-                                session.withCriteria<MessageRecord> { criteria ->
-                                    val record = criteria.from<MessageRecord>()
-                                    criteria.select(record)
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
                                         .where(
                                             between(record.get("time"), start, end),
                                             equal(record.get<Long>("bot"), bot)
@@ -157,9 +157,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val end = call.parameters["end"]?.toIntOrNull()
                                 ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
-                                session.withCriteria<MessageRecord> { criteria ->
-                                    val record = criteria.from<MessageRecord>()
-                                    criteria.select(record)
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
                                         .where(
                                             equal(record.get<Int>("bot"), bot),
                                             between(record.get("time"), start, end),
@@ -189,9 +189,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val end = call.parameters["end"]?.toIntOrNull()
                                 ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
-                                session.withCriteria<MessageRecord> { criteria ->
-                                    val record = criteria.from<MessageRecord>()
-                                    criteria.select(record)
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
                                         .where(
                                             equal(record.get<Int>("bot"), bot),
                                             between(record.get("time"), start, end),
@@ -226,9 +226,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val end = call.parameters["end"]?.toIntOrNull()
                                 ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
-                                session.withCriteria<MessageRecord> { criteria ->
-                                    val record = criteria.from<MessageRecord>()
-                                    criteria.select(record)
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
                                         .where(
                                             equal(record.get<Int>("bot"), bot),
                                             between(record.get("time"), start, end),
@@ -259,9 +259,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val end = call.parameters["end"]?.toIntOrNull()
                                 ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
-                                session.withCriteria<MessageRecord> { criteria ->
-                                    val record = criteria.from<MessageRecord>()
-                                    criteria.select(record)
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
                                         .where(
                                             equal(record.get<Int>("bot"), bot),
                                             between(record.get("time"), start, end),
@@ -292,9 +292,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val end = call.parameters["end"]?.toIntOrNull()
                                 ?: throw NoSuchElementException("need parameter end")
                             val records = factory.fromSession { session ->
-                                session.withCriteria<MessageRecord> { criteria ->
-                                    val record = criteria.from<MessageRecord>()
-                                    criteria.select(record)
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
                                         .where(
                                             between(record.get("time"), start, end),
                                             equal(
@@ -320,9 +320,9 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
                             val records = factory.fromSession { session ->
-                                session.withCriteria<BotRecord> { criteria ->
-                                    val record = criteria.from<BotRecord>()
-                                    criteria.select(record)
+                                session.withCriteria<BotRecord> { query ->
+                                    val record = query.from<BotRecord>()
+                                    query.select(record)
                                 }.list()
                             }
                             success(data = records)
@@ -338,13 +338,13 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         try {
                             val bot = call.parameters["bot"]?.toLongOrNull()
                             val records = factory.fromSession { session ->
-                                session.withCriteria<GroupRecord> { criteria ->
-                                    val record = criteria.from<GroupRecord>()
+                                session.withCriteria<GroupRecord> { query ->
+                                    val record = query.from<GroupRecord>()
                                     val group = record.get<Long>("group")
-                                    val root = criteria.select(record)
+                                    query.select(record)
 
                                     if (bot != null) {
-                                        val subquery = root.subquery<GroupMemberRecord>()
+                                        val subquery = query.subquery<GroupMemberRecord>()
                                         val member = subquery.from<GroupMemberRecord>()
                                         val uuid = member.get<GroupMemberIndex>("uuid")
                                         subquery.select(member)
@@ -352,7 +352,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                                 equal(uuid.get<Long>("group"), group),
                                                 equal(uuid.get<Long>("uid"), bot)
                                             )
-                                        root.where(exists(subquery))
+                                        query.where(exists(subquery))
                                     }
                                 }.list()
                             }
@@ -369,12 +369,12 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         try {
                             val bot = call.parameters["bot"]?.toLongOrNull()
                             val records = factory.fromSession { session ->
-                                session.withCriteria<FriendRecord> { criteria ->
-                                    val record = criteria.from<FriendRecord>()
+                                session.withCriteria<FriendRecord> { query ->
+                                    val record = query.from<FriendRecord>()
                                     val uuid = record.get<FriendIndex>("uuid")
-                                    val root = criteria.select(record)
+                                    query.select(record)
                                     if (bot != null) {
-                                        root.where(
+                                        query.where(
                                             equal(uuid.get<Long>("bot"), bot)
                                         )
                                     }
@@ -394,10 +394,10 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                             val group = call.parameters["group"]
                                 ?: throw NoSuchElementException("need parameter group")
                             val records = factory.fromSession { session ->
-                                session.withCriteria<GroupMemberRecord> { criteria ->
-                                    val record = criteria.from<GroupMemberRecord>()
+                                session.withCriteria<GroupMemberRecord> { query ->
+                                    val record = query.from<GroupMemberRecord>()
                                     val uuid = record.get<GroupMemberIndex>("uuid")
-                                    criteria.select(record)
+                                    query.select(record)
                                         .where(
                                             equal(uuid.get<Long>("group"), group)
                                         )
