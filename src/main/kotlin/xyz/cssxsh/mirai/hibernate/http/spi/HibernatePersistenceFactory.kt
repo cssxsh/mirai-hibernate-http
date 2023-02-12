@@ -1,6 +1,6 @@
 package xyz.cssxsh.mirai.hibernate.http.spi
 
-import net.mamoe.mirai.Bot
+import net.mamoe.mirai.*
 import net.mamoe.mirai.api.http.spi.persistence.*
 
 public class HibernatePersistenceFactory : PersistenceFactory {

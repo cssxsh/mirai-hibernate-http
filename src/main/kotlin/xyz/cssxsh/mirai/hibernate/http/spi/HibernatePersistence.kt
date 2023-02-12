@@ -17,9 +17,9 @@ public class HibernatePersistence(private val botId: Long) : Persistence {
 
     override fun getMessageOrNull(context: Context): MessageSource? {
         val records = factory.fromSession { session ->
-            session.withCriteria<MessageRecord> { criteria ->
-                val record = criteria.from<MessageRecord>()
-                criteria.select(record)
+            session.withCriteria<MessageRecord> { query ->
+                val record = query.from<MessageRecord>()
+                query.select(record)
                     .where(
                         equal(record.get<Long>("bot"), botId),
                         equal(record.get<String>("targetId"), context.subject.id),
