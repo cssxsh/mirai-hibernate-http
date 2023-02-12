@@ -459,6 +459,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
         }
 
         @JvmStatic
+        @Suppress("NOTHING_TO_INLINE")
         internal inline fun failure(code: Int, message: String): String {
             val result = HibernateAdapterResult<Unit>(
                 code = code,

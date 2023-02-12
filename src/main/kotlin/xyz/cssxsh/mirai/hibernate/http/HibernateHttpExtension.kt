@@ -15,7 +15,7 @@ public object HibernateHttpExtension : KotlinPlugin(
         author("cssxsh")
 
         dependsOn("xyz.cssxsh.mirai.plugin.mirai-hibernate-plugin", ">= 2.6.0")
-        dependsOn("net.mamoe.mirai-api-http", ">= 2.7.0")
+        dependsOn("net.mamoe.mirai-api-http", ">= 2.8.0")
     }
 ) {
     override fun PluginComponentStorage.onLoad() {

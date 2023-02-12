@@ -7,10 +7,16 @@
 [Mirai Hibernate Web](https://github.com/cssxsh/mirai-hibernate-web) 用于提供 WEB 页面  
 [Mirai Api Http](https://github.com/project-mirai/mirai-api-http) 前置插件，提供HTTP API  
 
+## PersistenceFactory
+
+**since 1.1.0**
+为 `mirai-api-http` 提供了新的 PersistenceFactory `hibernate`  
+使用 `mirai-hibernate-plugin` 所提供的 ORM 消息记录器 实现了历史消息接口  
+配置方法为修改 `config/net.mamoe.mirai-api-httpsetting.yml` 的 `persistenceFactory` 配置项 为 `hibernate`
+
 ## Adapter
 
-为 `mirai-api-http` 提供了新的 Adapter `hibernate`  
-使用 `mirai-hibernate-plugin` 所提供的 ORM 消息记录器 实现了历史消息接口
+为 `mirai-api-http` 提供了新的 Adapter `hibernate`
 
 ### Route
 
@@ -44,7 +50,9 @@
     获取所有能作为条件的 bot id
 14. GET `/archive/group?bot={}`  
     获取所有能作为条件的 group id
-14. GET `/archive/user?bot={}`  
+15. GET `/archive/friend?bot={}`  
+    获取所有能作为条件的 user id
+16. GET `/archive/member?group={}`  
     获取所有能作为条件的 user id
 
 ### Web
@@ -55,7 +63,12 @@
 
 ## 安装
 
+### MCL 指令安装
+
+**请确认 mcl.jar 的版本是 2.1.0+**  
+`./mcl --update-package xyz.cssxsh.mirai:mirai-hibernate-http --channel maven-stable --type plugins`
+
 ### 手动安装
 
-1. 运行 [Mirai Console](https://github.com/mamoe/mirai-console) 生成 `plugins` 文件夹
-2. 从 [Releases](https://github.com/cssxsh/mirai-hibernate-http/releases) 下载 `jar` 并将其放入 `plugins` 文件夹中
+1. 从 [Releases](https://github.com/cssxsh/mirai-hibernate-http/releases) 或者 [Maven](https://repo1.maven.org/maven2/xyz/cssxsh/mirai/mirai-hibernate-http/) 下载 `mirai2.jar`
+2. 将其放入 `plugins` 文件夹中
