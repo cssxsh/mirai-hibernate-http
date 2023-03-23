@@ -318,19 +318,25 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         try {
                             val target = call.parameters["target"]?.toIntOrNull()
                                 ?: throw NoSuchElementException("need parameter target")
-                            val time = call.parameters["time"]?.toIntOrNull()
-                                ?: throw NoSuchElementException("need parameter time")
                             val ids = call.parameters["ids"]
                                 ?: throw NoSuchElementException("need parameter ids")
+                            val time = call.parameters["time"]?.toIntOrNull()
                             val records = factory.fromSession { session ->
                                 session.withCriteria<MessageRecord> { query ->
                                     val record = query.from<MessageRecord>()
                                     query.select(record)
-                                        .where(
+                                    if (time == null) {
+                                        query.where(
+                                            equal(record.get<Long>("targetId"), target),
+                                            equal(record.get<String>("ids"), ids)
+                                        )
+                                    } else {
+                                        query.where(
                                             equal(record.get<Long>("targetId"), target),
                                             equal(record.get<Long>("time"), time),
                                             equal(record.get<String>("ids"), ids)
                                         )
+                                    }
                                 }.list()
                             }
                             success(data = records)
