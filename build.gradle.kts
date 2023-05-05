@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "xyz.cssxsh.mirai"
-version = "1.1.0"
+version = "1.1.1"
 
 mavenCentralPublish {
     useCentralS01()
@@ -26,9 +26,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("xyz.cssxsh.mirai:mirai-hibernate-plugin:2.6.1")
-    compileOnly("net.mamoe:mirai-api-http:2.8.0")
-    compileOnly("net.mamoe:mirai-api-http-spi:2.8.0")
+    compileOnly("xyz.cssxsh.mirai:mirai-hibernate-plugin:2.7.1")
+    compileOnly("net.mamoe:mirai-api-http:2.9.1")
+    compileOnly("net.mamoe:mirai-api-http-spi:2.9.1")
     testImplementation(kotlin("test"))
     //
     implementation(platform("net.mamoe:mirai-bom:2.14.0"))
