@@ -54,7 +54,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = "random failure, face record may be empty.")
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -69,7 +69,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: IllegalStateException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -82,7 +82,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -96,7 +96,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -110,7 +110,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -141,7 +141,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -173,7 +173,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -208,7 +208,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -243,7 +243,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -278,7 +278,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -309,7 +309,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -343,7 +343,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -363,7 +363,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -394,7 +394,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -418,7 +418,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
@@ -441,7 +441,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
-                            failure(code = 500, message = cause.message ?: cause.stackTraceToString())
+                            failure(code = 500, message = cause.stackTraceToString())
                         }
                     }
                 }
