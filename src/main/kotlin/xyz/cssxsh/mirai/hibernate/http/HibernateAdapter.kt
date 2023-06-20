@@ -166,7 +166,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                             equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.GROUP),
                                             equal(record.get<Long>("targetId"), group)
                                         )
-                                        .orderBy(desc(record.get<Int>("time")))
+                                        .orderBy(desc(record.get<Int>("id")))
                                 }.list()
                             }
                             success(data = records)
@@ -201,7 +201,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                                 equal(record.get<Long>("targetId"), friend)
                                             )
                                         )
-                                        .orderBy(desc(record.get<Int>("time")))
+                                        .orderBy(desc(record.get<Int>("id")))
                                 }.list()
                             }
                             success(data = records)
@@ -236,7 +236,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                             equal(record.get<Long>("fromId"), member),
                                             equal(record.get<Long>("targetId"), group)
                                         )
-                                        .orderBy(desc(record.get<Int>("time")))
+                                        .orderBy(desc(record.get<Int>("id")))
                                 }.list()
                             }
                             success(data = records)
@@ -271,7 +271,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                                 equal(record.get<Long>("targetId"), stranger)
                                             )
                                         )
-                                        .orderBy(desc(record.get<Int>("time")))
+                                        .orderBy(desc(record.get<Int>("id")))
                                 }.list()
                             }
                             success(data = records)
@@ -302,7 +302,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                                 MessageSourceKind.valueOf(kind)
                                             )
                                         )
-                                        .orderBy(desc(record.get<Int>("time")))
+                                        .orderBy(desc(record.get<Int>("id")))
                                 }.list()
                             }
                             success(data = records)
