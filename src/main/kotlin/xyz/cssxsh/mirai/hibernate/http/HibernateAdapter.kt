@@ -134,7 +134,7 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                             between(record.get("time"), start, end),
                                             equal(record.get<Long>("bot"), bot)
                                         )
-                                        .orderBy(desc(record.get<Int>("time")))
+                                        .orderBy(desc(record.get<Int>("id")))
                                 }.list()
                             }
                             success(data = records)
