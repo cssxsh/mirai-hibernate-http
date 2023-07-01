@@ -22,6 +22,8 @@
 
 下列路由中，start 和 end 参数都是 unix timestamp
 
+#### Message Route
+
 1.  GET `/message/bot?bot={}&start={}&end={}`  
     获取指定机器人从 start 到 end 之间的消息记录  
 2.  GET `/message/group?bot={}&group={}&start={}&end={}`  
@@ -33,27 +35,33 @@
 5.  GET `/message/stranger?bot={}&stranger={}&start={}&end={}`  
     获取指定陌生人从 start 到 end 之间的消息记录
 6.  GET `/message/kind?kind={}&start={}&end={}`  
-    获取指定类型 `(GROUP, FRIEND, TEMP, STRANGER)` 从 start 到 end 之间的消息记录
+    获取指定类型 `GROUP, FRIEND, TEMP, STRANGER` 从 start 到 end 之间的消息记录
 7.  GET `/message/source?target={}&time={}&ids={}`  
     获取指定源的消息记录
-8.  GET `/face/random`  
+
+#### Face Route
+
+1. GET `/face/random`  
     随机一条表情包记录
-9.  PUT `/face/disable?md5={}`  
+2. PUT `/face/disable?md5={}`  
     屏蔽一条表情包记录
-10. GET `/face/tag?md5={}`  
-    获取一条指定的表情包记录
-11. PUT `/face/tag?md5={}&tag={}`  
-    为表情包设置一个tag
-12. DELETE `/face/tag?md5={}&tag={}`  
-    为表情包删除一个tag
-13. GET `/archive/bot`  
-    获取所有能作为条件的 bot id
-14. GET `/archive/group?bot={}`  
-    获取所有能作为条件的 group id
-15. GET `/archive/friend?bot={}`  
-    获取所有能作为条件的 user id
-16. GET `/archive/member?group={}`  
-    获取所有能作为条件的 user id
+3. GET `/face/tag?md5={}`  
+   获取一条指定的表情包记录
+4. PUT `/face/tag?md5={}&tag={}`  
+   为表情包设置一个tag
+5. DELETE `/face/tag?md5={}&tag={}`  
+   为表情包删除一个tag
+
+#### Archive Route
+
+1. GET `/archive/bot`  
+   获取所有的 bot record
+2. GET `/archive/group?bot={}`  
+   获取所有的 group record
+3. GET `/archive/friend?bot={}`  
+   获取所有的 friend record
+4. GET `/archive/member?group={}`  
+   获取所有的 member record
 
 ### Web
 
