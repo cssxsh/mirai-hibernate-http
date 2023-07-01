@@ -145,6 +145,32 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         }
                     }
                 }
+                get("/message/bot/stream") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val offset = call.parameters["offset"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter offset")
+                            val limit = call.parameters["limit"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter limit")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
+                                        .where(
+                                            equal(record.get<Long>("bot"), bot)
+                                        )
+                                }.setFirstResult(offset).setMaxResults(limit).list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.stackTraceToString())
+                        }
+                    }
+                }
                 get("/message/group") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
@@ -168,6 +194,36 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                         )
                                         .orderBy(desc(record.get<Int>("id")))
                                 }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.stackTraceToString())
+                        }
+                    }
+                }
+                get("/message/group/stream") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val group = call.parameters["group"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter group")
+                            val offset = call.parameters["offset"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter offset")
+                            val limit = call.parameters["limit"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter limit")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
+                                        .where(
+                                            equal(record.get<Int>("bot"), bot),
+                                            equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.GROUP),
+                                            equal(record.get<Long>("targetId"), group)
+                                        )
+                                }.setFirstResult(offset).setMaxResults(limit).list()
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
@@ -212,6 +268,39 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         }
                     }
                 }
+                get("/message/friend/stream") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val friend = call.parameters["friend"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter friend")
+                            val offset = call.parameters["offset"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter offset")
+                            val limit = call.parameters["limit"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter limit")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
+                                        .where(
+                                            equal(record.get<Int>("bot"), bot),
+                                            equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.FRIEND),
+                                            or(
+                                                equal(record.get<Long>("fromId"), friend),
+                                                equal(record.get<Long>("targetId"), friend)
+                                            )
+                                        )
+                                }.setFirstResult(offset).setMaxResults(limit).list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.stackTraceToString())
+                        }
+                    }
+                }
                 get("/message/member") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
@@ -238,6 +327,39 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                         )
                                         .orderBy(desc(record.get<Int>("id")))
                                 }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.stackTraceToString())
+                        }
+                    }
+                }
+                get("/message/member/stream") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val group = call.parameters["group"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter group")
+                            val member = call.parameters["member"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter member")
+                            val offset = call.parameters["offset"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter offset")
+                            val limit = call.parameters["limit"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter limit")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
+                                        .where(
+                                            equal(record.get<Int>("bot"), bot),
+                                            equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.GROUP),
+                                            equal(record.get<Long>("fromId"), member),
+                                            equal(record.get<Long>("targetId"), group)
+                                        )
+                                }.setFirstResult(offset).setMaxResults(limit).list()
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
@@ -282,6 +404,39 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                         }
                     }
                 }
+                get("/message/stranger/stream") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val stranger = call.parameters["stranger"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter stranger")
+                            val offset = call.parameters["offset"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter offset")
+                            val limit = call.parameters["limit"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter limit")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
+                                        .where(
+                                            equal(record.get<Int>("bot"), bot),
+                                            equal(record.get<MessageSourceKind>("kind"), MessageSourceKind.STRANGER),
+                                            or(
+                                                equal(record.get<Long>("fromId"), stranger),
+                                                equal(record.get<Long>("targetId"), stranger)
+                                            )
+                                        )
+                                }.setFirstResult(offset).setMaxResults(limit).list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.stackTraceToString())
+                        }
+                    }
+                }
                 get("/message/kind") {
                     call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
                         try {
@@ -304,6 +459,35 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                         )
                                         .orderBy(desc(record.get<Int>("id")))
                                 }.list()
+                            }
+                            success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.stackTraceToString())
+                        }
+                    }
+                }
+                get("/message/kind/stream") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val kind = call.parameters["kind"]
+                                ?: throw NoSuchElementException("need parameter kind")
+                            val offset = call.parameters["offset"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter offset")
+                            val limit = call.parameters["limit"]?.toIntOrNull()
+                                ?: throw NoSuchElementException("need parameter limit")
+                            val records = factory.fromSession { session ->
+                                session.withCriteria<MessageRecord> { query ->
+                                    val record = query.from<MessageRecord>()
+                                    query.select(record)
+                                        .where(
+                                            equal(
+                                                record.get<MessageSourceKind>("kind"),
+                                                MessageSourceKind.valueOf(kind)
+                                            )
+                                        )
+                                }.setFirstResult(offset).setMaxResults(limit).list()
                             }
                             success(data = records)
                         } catch (cause: NoSuchElementException) {
