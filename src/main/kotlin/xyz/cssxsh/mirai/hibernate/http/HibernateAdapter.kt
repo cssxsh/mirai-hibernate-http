@@ -8,6 +8,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
+import net.mamoe.mirai.*
 import net.mamoe.mirai.api.http.adapter.*
 import net.mamoe.mirai.api.http.context.session.*
 import net.mamoe.mirai.event.events.*
@@ -226,6 +227,40 @@ public class HibernateAdapter : MahKtorAdapter("hibernate") {
                                 }.setFirstResult(offset).setMaxResults(limit).list()
                             }
                             success(data = records)
+                        } catch (cause: NoSuchElementException) {
+                            failure(code = 400, message = cause.message ?: cause.stackTraceToString())
+                        } catch (cause: Throwable) {
+                            failure(code = 500, message = cause.stackTraceToString())
+                        }
+                    }
+                }
+                get("/message/group/file") {
+                    call.respondText(status = HttpStatusCode.OK, contentType = ContentType.Application.Json) {
+                        try {
+                            val bot = call.parameters["bot"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter bot")
+                            val group = call.parameters["group"]?.toLongOrNull()
+                                ?: throw NoSuchElementException("need parameter group")
+                            val id = call.parameters["id"]
+                                ?: throw NoSuchElementException("need parameter id")
+
+                            val files = Bot.getInstance(bot).getGroupOrFail(group).files
+
+                            val file = files.root.resolveFileById(id, true)
+                                ?: throw NoSuchElementException("file by id $id")
+                            val url = file.getUrl()
+
+                            success(data = buildJsonObject {
+                                put("id", file.id)
+                                put("name", file.name)
+                                put("absolute_path", file.absolutePath)
+                                put("is_file", file.isFile)
+                                put("is_folder", file.isFolder)
+                                put("upload_time", file.uploadTime)
+                                put("last_modified_time", file.lastModifiedTime)
+                                put("uploader_id", file.uploaderId)
+                                put("url", url)
+                            })
                         } catch (cause: NoSuchElementException) {
                             failure(code = 400, message = cause.message ?: cause.stackTraceToString())
                         } catch (cause: Throwable) {
